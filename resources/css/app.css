@@ -1,0 +1,293 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.form-toggle {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.form-toggle button {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form-toggle button.active {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 5px;
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form h2 {
+    color: white;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form input {
+    margin-bottom: 15px;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 16px;
+}
+
+.form input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.form button[type="submit"] {
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    background: #4CAF50;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.form button[type="submit"]:hover {
+    background: #45a049;
+}
+
+.social-login {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.social-login p {
+    color: white;
+    margin-bottom: 10px;
+}
+
+.social-btn {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.social-btn:hover {
+    transform: scale(1.05);
+}
+
+.facebook {
+    background: #3b5998;
+}
+
+.google {
+    background: #db4437;
+}
+
+.twitter {
+    background: #1da1f2;
+}
+
+.hidden {
+    display: none;
+}
+
+
+/* Stylish Navbar Enhancements */
+.stylish-navbar {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 50%, #2c3e50 100%) !important; /* Subtle dark gradient */
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.stylish-navbar:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); /* Deeper shadow on hover */
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    color: #ecf0f1 !important;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+    color: #f39c12 !important; /* Accent color on hover */
+}
+
+.navbar-nav .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #f39c12 !important; /* Accent color */
+    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link.active {
+    color: #e74c3c !important; /* Red for active link */
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: 5px;
+}
+
+.navbar-nav .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background-color: #f39c12;
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+    width: 80%;
+}
+
+.dropdown-menu {
+    background-color: rgba(44, 62, 80, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    border-radius: 8px;
+}
+
+.dropdown-item {
+    color: #ecf0f1;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+    background-color: rgba(243, 156, 18, 0.2);
+    color: #f39c12;
+}
+
+.navbar-toggler {
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.navbar-toggler:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Mobile responsiveness */
+@media (max-width: 991px) {
+    .stylish-navbar .navbar-collapse {
+        background-color: rgba(44, 62, 80, 0.95);
+        padding: 1rem;
+        border-radius: 0 0 10px 10px;
+        box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .navbar-nav .nav-link {
+        padding: 0.5rem 1rem;
+    }
+}
+/* Stylish Product Card Enhancements */
+.stylish-product-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stylish-product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.stylish-product-image {
+    max-height: 400px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.stylish-product-image:hover {
+    transform: scale(1.05);
+}
+
+.stylish-title {
+    font-family: 'Arial', sans-serif;
+    color: #2c3e50;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.stylish-description {
+    line-height: 1.6;
+    font-size: 1.1rem;
+}
+
+.stylish-buy-btn {
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+.stylish-buy-btn:hover {
+    background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+}
+
+.stylish-buy-btn:active {
+    transform: translateY(0);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .stylish-product-card .row {
+        flex-direction: column;
+    }
+    
+    .stylish-product-image {
+        max-height: 300px;
+    }
+    
+    .stylish-title {
+        font-size: 1.8rem;
+    }
+}

@@ -1,6 +1,15 @@
-version: '3.8'
+# docker‑compose.yml
+version: "3.9"
+
+networks:
+  laravel:
+    driver: bridge
+
+volumes:
+  db_data:           # persistent MySQL data
 
 services:
+  # PHP‑FPM / Laravel
   app:
     build:
       context: .
@@ -8,12 +17,16 @@ services:
     container_name: laravel-app
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html
+      - ./:/var/www/html                      # project source
+      - ./storage/certs:/var/www/html/storage/certs
+    expose:
+      - "9000"                                # internal PHP‑FPM port
     depends_on:
       - mysql
-    expose:
-      - "9000"  # So Nginx can talk to PHP-FPM inside this container
+    networks:
+      - laravel
 
+  # Nginx reverse‑proxy
   webserver:
     image: nginx:alpine
     container_name: nginx-server
@@ -22,12 +35,15 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - .:/var/www/html
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./nginx/ssl:/etc/nginx/ssl
+      - ./:/var/www/html
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro         # SSL certs / keys
     depends_on:
       - app
+    networks:
+      - laravel
 
+  # MySQL 8
   mysql:
     image: mysql:8.0
     container_name: mysql-db
@@ -41,7 +57,10 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+    networks:
+      - laravel
 
+  # phpMyAdmin for convenience
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
@@ -54,6 +73,5 @@ services:
       - "8080:80"
     depends_on:
       - mysql
-
-volumes:
-  db_data:
+    networks:
+      - laravel

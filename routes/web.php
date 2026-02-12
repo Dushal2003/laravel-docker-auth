@@ -14,22 +14,21 @@ use App\Http\Controllers\Auth\OtpController;
 use Illuminate\Support\Facades\Http;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
+use Illuminate\Support\Facades\Log;
 
 
 
 
 
 Route::get('/home', function () {
-    
-    $welcome = Session::get('welcome');      
-    $username = Session::get('username');    
-
+    $welcome = Session::get('welcome');
+    $username = Session::get('username');
     return view('index', compact('welcome', 'username'));
-    
 })->name('home');
 
-Route::get('/courses',function(){
-    return view('courses');
+
+Route::get('/course',function(){
+    return view('course');
 })->name('courses');
 
 
@@ -38,84 +37,79 @@ Route::get('/about',function(){
 })->name('about.us');
 
 //--------------------------user form-------------------------------------
-// Register routes
 
-// Auth: Register
-Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::get('/verify-email', [AuthController::class, 'verifyEmailLink'])->name('verify.email');
-
-// Auth: Login
-Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
-
-Route::post('/login', function (Request $request) {
-    $credentials = $request->validate([
-        'email'    => ['required', 'email'],
-        'password' => ['required', 'string'],
-    ]);
-    //Http::post(env('API_URL'), $credentials);
-
-    $response = Http::withoutVerifying()
-        ->post('https://nginx-server/api/auth/login', $credentials);
-
-    if (!$response->successful()) {
-        return back()->withErrors([
-            'email' => $response->json('message') ?? 'Login failed.',
-        ])->withInput();
-    }
-
-    $apiUser = $response->json('user') ?? [];
-
-    $user = \App\Models\User::updateOrCreate(
-        ['email' => $credentials['email']],
-        [
-            'name'       => $apiUser['name']      ?? $credentials['email'],
-            'password'   => Hash::make($credentials['password']),
-            'user_type'  => $apiUser['user_type'] ?? 'user',
-            'is_verified'=> true,
-            'email_verified_at' => now(),
-        ]
-    );
-
-    
-    Auth::guard('web')->login($user);
-    request()->session()->regenerate();
-    session([
-        'token'    => $response['access_token'],
-        'username' => $user->name,
-    ]);
-
-    return $user->user_type === 'admin'
-        ? redirect()->route('admin.dashboard')
-        : redirect()->route('home');
-})->name('login')->middleware('throttle:5,1');
+// Optional redirect
+Route::redirect('/here', '/there', 301);
 
 
-// Admin routes
-Route::middleware(['auth', 'admin'])
-    ->prefix('admin')
-    ->as('admin.')
-    ->group(function () {
-        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-        Route::resource('users', UserController::class)->except(['show']);
-    });
+Route::middleware('guest')->group(function () {
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
+    Route::post('/register', [AuthController::class, 'register'])->name('register');
+
+    Route::get('/verify-email', [AuthController::class, 'verifyEmailLink'])
+        ->middleware('throttle:6,1')
+        ->name('verify.email');
+
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.form');
+    Route::post('/login', [AuthController::class, 'login'])
+        ->name('login')
+        ->middleware('throttle:5,1');
+});
 
 
+Route::middleware('auth:web')->group(function () {
+    Route::post('/logout', [AuthController::class, 'webLogout'])->name('logout');
+});
 
-// Logout
-Route::post('/logout', function () {
-    Auth::logout();
-    request()->session()->invalidate();
-    request()->session()->regenerateToken();
-    return redirect('/login')->with('success', 'Logged out successfully.');
-})->name('logout');
+// Admin-only routes
+Route::prefix('admin')->as('admin.')->middleware(['auth:web', 'admin'])->group(function () {
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::resource('users', UserController::class)->except(['show']);
+});
 
+
+Route::get('/profile', function () {
+    return view('profile');
+})->name('profile');
 
 
 
 Route::get('/secure-check', function () {
     return request()->secure() ? 'HTTPS ✅' : 'HTTP ❌';
 });
+
+use App\Http\Controllers\PaytmController;
+
+// Payment form (optional if you have a front-end button)
+Route::get('/paytm', [PaytmController::class, 'showForm'])->name('paytm.form');
+
+// Initiate payment
+Route::get('/paytm-initiate', [PaytmController::class, 'initiatePayment'])->name('paytm.initiate');
+
+// Paytm callback
+Route::post('/paytm-callback', [PaytmController::class, 'paymentCallback'])->name('paytm.callback');
+
+// routes/web.php
+use App\Http\Controllers\CourseController;
+
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
+
+//*************************ProductContrller************ */
+use App\Http\Controllers\ProductController;
+
+Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+Route::get('/products/{product:slug}', [ProductController::class, 'show'])->name('products.show');
+
+//*************************************************************** */
+
+// ********************Google LOGIN ************************
+use App\Http\Controllers\Auth\GoogleController;
+
+Route::get('/auth/google', [GoogleController::class, 'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class, 'callback']);
+
+//********************** End Google login*************************************** */
 
 
 //Route::view('/login/request-otp', 'auth.request-otp')->name('otp.request.form');
@@ -138,9 +132,7 @@ Route::get('/secure-check', function () {
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-require_once base_path('app/Libraries/PHPMailer/PHPMailer.php');
-require_once base_path('app/Libraries/PHPMailer/SMTP.php');
-require_once base_path('app/Libraries/PHPMailer/Exception.php');
+
 
 Route::get('/test-mail', function () {
     try {
@@ -169,10 +161,13 @@ Route::get('/test-mail', function () {
 
 
 
-Route::get('/tasks', function () {
+
+Route::get('/api/tasks', [AuthController::class, 'TaskApiController']);
+/*  Route::get('/tasks', function () {
     $tasks = Task::paginate(10); // 10 items per page
     return view('tasks', compact('tasks'));
 })->name('tasks.list');
+*/
 
 
 // Show Edit Form for a Task

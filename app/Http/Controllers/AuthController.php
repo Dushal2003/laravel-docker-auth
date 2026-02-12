@@ -12,9 +12,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
-require_once base_path('app/Libraries/PHPMailer/PHPMailer.php');
-require_once base_path('app/Libraries/PHPMailer/SMTP.php');
-require_once base_path('app/Libraries/PHPMailer/Exception.php');
+    use App\Models\Task;
 
 class AuthController extends Controller
 {
@@ -143,7 +141,12 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (!$token = auth('api')->attempt($credentials)) {
-            return response()->json(['message' => 'Invalid credentials'], 401);
+            return response()->json([
+                            'success' => false,
+                            'error' => 'unauthorized',
+                            'message' => 'Invalid credentials'
+                        ], 401);
+
         }
 
         if (!auth('api')->user()->is_verified) {
@@ -189,4 +192,14 @@ class AuthController extends Controller
         return redirect()->route('login.form')
             ->with('success', 'Logged out successfully.');
     }
+
+
+      public function TaskApiController()
+     {
+        return response()->json(
+            Task::select('title', 'description', 'long_description', 'completed')->get()
+        );
+    }
+
+
 }

@@ -58,6 +58,11 @@
         <div class="mt-3 text-center">
             Don't have an account? <a href="{{ route('register.form') }}">Register here</a>
         </div>
+        <a href="{{ route('google.login') }}" class="btn btn-danger w-100">
+    <i class="fab fa-google me-1"></i> Continue with Google
+</a>
+
+
     </form>
 </div>
 @endsection
